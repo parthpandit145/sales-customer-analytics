@@ -166,7 +166,7 @@ that's why the SQL is commented the way it is.
 
 Then:
 
-- Screenshots into `docs/img/` with the names the README expects.
+- Screenshots into `docs/img/`, then add a Screenshots section to the README.
 - Run `psql "$DATABASE_URL" -f sql/10_insight_queries.sql` and fill the blanks in
   `docs/05-insights.md` with your own numbers.
 - Put the Power BI Service link at the top of the README.
