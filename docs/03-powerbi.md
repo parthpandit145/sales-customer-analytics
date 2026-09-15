@@ -10,14 +10,14 @@ awkward part of a browser-only build, and it is worth knowing exactly why:
 - A **free** licence cannot create dataflows at all, so there is no cloud path
   from the Service to Postgres.
 - **Dataflow Gen1** (Pro) *can* see PostgreSQL but insists on an on-premises data
-  gateway even when the database is public and internet-reachable — Power BI has
+  gateway even when the database is public and internet-reachable. Power BI has
   no way to know the host is not behind a corporate firewall.
 - **Dataflow Gen2** (Fabric) does not need a gateway for cloud sources. A public
   Neon endpoint with SSL connects directly.
 
 The Fabric trial gives 60 days of F64 capacity for free, which is what makes the
 direct connection possible. Read *Surviving the trial expiry* at the bottom
-before you start — it changes nothing about the build, but it determines whether
+before you start. It changes nothing about the build, but it determines whether
 your dashboard is still refreshing in three months.
 
 ## 3.1 · Turn on the trial and make a workspace
@@ -44,10 +44,10 @@ ceremony, and its SQL analytics endpoint gives you a semantic model for free.
 |---|---|
 | Server | `ep-xxxx-pooler.REGION.aws.neon.tech:5432` |
 | Database | `neondb` |
-| Connection | Create new connection (cloud — leave the gateway blank) |
+| Connection | Create new connection (cloud, leave the gateway blank) |
 | Authentication kind | Basic |
 | Username / Password | your Neon credentials |
-| Use encrypted connection | **checked** — Neon refuses plaintext |
+| Use encrypted connection | **checked**, Neon refuses plaintext |
 | Privacy level | Organizational |
 
 Select these 14 objects from the `mart` schema:
@@ -72,16 +72,16 @@ Select these 14 objects from the `mart` schema:
 These are plain views, not materialised copies. That was measured, not assumed:
 the slowest of them takes 1.78 s to scan in full, and Power BI reads each one
 twice a day. A materialised layer bought no meaningful speed and cost 163 MB of
-the 512 MB free tier — see the header of `sql/08_post_batch.sql`.
+the 512 MB free tier; see the header of `sql/08_post_batch.sql`.
 
 Import the **views, not the raw tables**. Everything arrives clean, typed and
-modelled, so there is nothing left to do in Power Query — which is exactly the
+modelled, so there is nothing left to do in Power Query, which is exactly the
 point of having done the work in SQL.
 
 For each query: **Data destination → Lakehouse** `olist_lh`, update method
 **Replace**. Then **Publish**.
 
-Set the dataflow's refresh schedule to run **after** an n8n batch, not before —
+Set the dataflow's refresh schedule to run **after** an n8n batch, not before,
 n8n refreshes the materialised views at the end of every run, and a dataflow
 that fires first just reimports the previous batch. It also wakes Neon's compute
 so the first query does not hit a cold start.
@@ -122,7 +122,7 @@ Three decisions in that table are worth being able to defend:
 interesting question is "how much *revenue* comes from Champions?". Revenue is
 on the fact. The filter has to travel `vw_rfm → dim_customer → fact_sales`, and
 the first hop is uphill, so that relationship must be bidirectional. It is safe
-because it is 1:1 and `vw_rfm` touches nothing else — no ambiguity can arise.
+because it is 1:1 and `vw_rfm` touches nothing else, so no ambiguity can arise.
 
 **Why `dim_geo` is not related to `dim_customer`.** It is tempting: both have a
 state. But `dim_customer` is already related to both facts, so adding
@@ -133,13 +133,13 @@ Power BI would deactivate one of them. Geography reaches the facts directly.
 `dim_customer` holds every customer; `vw_rfm` and `vw_customer_ltv` hold only
 customers with at least one non-cancelled order. In the real dataset that is a
 gap of a few thousand rows. Power BI shows the unmatched side as blank, which is
-the truthful answer — those people have no RFM segment because they never
+the truthful answer: those people have no RFM segment because they never
 bought anything. `Repeat Customer %` handles it explicitly by using
 `lifetime_orders >= 1` as its denominator.
 
 **Why `vw_cohort` floats.** Its grain is cohort-month × month-index, which does
 not join to a daily date table without lying. The retention matrix carries its
-own cohort slicer instead. `vw_category_pareto` floats for a different reason —
+own cohort slicer instead. `vw_category_pareto` floats for a different reason:
 the `Cumulative Revenue %` measure recomputes the Pareto live off `fact_sales`,
 so the SQL version exists to cross-check the DAX, not to feed it.
 
@@ -147,7 +147,7 @@ so the SQL version exists to cross-check the DAX, not to feed it.
 
 `dim_date` → **Table tools → Mark as date table** → date column `date`.
 
-Nothing in section 02 of `dax/measures.md` works until this is done — `TOTALYTD`
+Nothing in section 02 of `dax/measures.md` works until this is done. `TOTALYTD`
 and `SAMEPERIODLASTYEAR` silently return blanks against an unmarked table.
 
 ### Model housekeeping
@@ -193,7 +193,7 @@ Now add the measures from `dax/measures.md`.
 
 Model view → **Manage roles**.
 
-### Static role — the simple version
+### Static role: the simple version
 
 Role `Southeast`, table `dim_geo`:
 
@@ -203,7 +203,7 @@ Role `Southeast`, table `dim_geo`:
 
 Fine for a demo, but it means one role per region, maintained by hand.
 
-### Dynamic role — the one to show
+### Dynamic role: the one to show
 
 Role `Regional Manager`, with a filter on **two** tables.
 
@@ -236,7 +236,7 @@ On `rls_user_region` itself:
 Filtering `dim_customer` as well as `dim_geo` is the part people miss.
 `dim_geo` is deliberately not related to `dim_customer` (see above), so a role
 that only filters `dim_geo` locks down every revenue visual and leaves the RFM,
-LTV and cohort visuals wide open — a customer list is exactly the thing regional
+LTV and cohort visuals wide open, and a customer list is exactly the thing regional
 RLS is supposed to protect. Two filter expressions, one role, no ambiguity.
 
 Adding a manager is then an `INSERT` into `mart.rls_user_region`, no model
@@ -263,14 +263,14 @@ The Fabric trial ends after 60 days and the direct Postgres connection goes with
 it. Decide which of these you want before that happens:
 
 **Do nothing.** The report keeps working; the data stops updating and freezes at
-whatever the last refresh loaded. Perfectly acceptable for a portfolio piece —
-just say so in the README rather than letting someone discover a stale date.
+whatever the last refresh loaded. Perfectly acceptable for a portfolio piece.
+Just say so in the README rather than letting someone discover a stale date.
 
 **Add a file hop (recommended, and free).** Add one node to the n8n workflow that
 writes each mart view to CSV into a OneDrive for Business or SharePoint folder on
 a schedule. Power BI Service builds a semantic model straight from a
 OneDrive/SharePoint folder and refreshes it with no gateway and no Fabric
-capacity — it works on a Pro licence, and in My Workspace on a free one. Slower
+capacity. It works on a Pro licence, and in My Workspace on a free one. Slower
 and less elegant than a live SQL connection, but it is the version that is still
 alive next year. Set this up *before* the trial ends so you can prove both paths
 work.

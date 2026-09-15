@@ -7,18 +7,18 @@ lakehouse, no gateway, no capacity licence.
 
 **There is no semantic model.** A Superset chart is built on exactly one dataset,
 and there are no relationships between datasets. That is why `sql/12_superset_views.sql`
-exists — it flattens the star schema into three wide views. The dimensional model
-in `sql/04`–`sql/07` is still the source of truth; these are a presentation layer
+exists: it flattens the star schema into three wide views. The dimensional model
+in `sql/04` to `sql/07` is still the source of truth; these are a presentation layer
 on top of it.
 
 **Metrics replace DAX.** A Superset metric is a SQL aggregate expression saved on
-a dataset. The time-intelligence measures — YoY, moving average, running total —
+a dataset. The time-intelligence measures (YoY, moving average, running total)
 are not written at all; they are options in Superset's **Advanced Analytics**
 panel.
 
 **Superset queries live.** Power BI imports a snapshot twice a day; Superset hits
 Postgres on every chart render and every filter change. That inverts the
-materialisation decision — see the header of `sql/08_post_batch.sql`.
+materialisation decision; see the header of `sql/08_post_batch.sql`.
 
 ---
 
@@ -35,7 +35,7 @@ else, verifies it **cannot** read `raw.customers` and **cannot** write, and
 writes a ready-made connection URI to `scripts/.superset_uri` (gitignored,
 mode 600).
 
-This matters more than it looks. Superset ships **SQL Lab** — anyone who can log
+This matters more than it looks. Superset ships **SQL Lab**, so anyone who can log
 into the dashboard can run arbitrary SQL with whatever credentials the connection
 holds. With `neondb_owner` that includes `DROP TABLE`. `superset_ro` can read the
 mart views and nothing else; it cannot reach the raw customer records in `seed`
@@ -47,7 +47,7 @@ Rotate the password any time by re-running the script.
 
 ## 6.2 · Preset
 
-1. Sign up at **preset.io** — free tier, no card.
+1. Sign up at **preset.io** (free tier, no card).
 2. Create a workspace.
 3. **Data → Databases → + Database → PostgreSQL**, and choose the
    **SQLAlchemy URI** option rather than filling the host/port fields.
@@ -57,7 +57,7 @@ Rotate the password any time by re-running the script.
    postgresql+psycopg2://superset_ro:...@ep-xxxx-pooler.REGION.aws.neon.tech:5432/neondb?sslmode=require
    ```
 
-   Open that file to copy it. Don't paste it into a chat window — it contains
+   Open that file to copy it. Don't paste it into a chat window, because it contains
    the password.
 
 5. **Advanced → SQL Lab**: leave "Allow DDL and DML" **off**. The role blocks it
@@ -67,7 +67,7 @@ Rotate the password any time by re-running the script.
    This is what keeps Neon's compute hours down.
 7. **Test connection**, then **Connect**.
 
-> First connection may take a second or two — Neon suspends compute when idle and
+> First connection may take a second or two. Neon suspends compute when idle and
 > wakes on connect.
 
 ---
@@ -92,7 +92,7 @@ until a dataset has one.
 Two rules that keep the numbers honest, both enforced by how the views are built:
 
 - **Never measure `order_review_score` on `bi_sales`.** It is an order attribute
-  carried at item grain for filtering only — averaging it weights every order by
+  carried at item grain for filtering only, because averaging it weights every order by
   how many items it contained. The `_order` suffix is the reminder. Use `bi_orders`.
 - **`is_valid_sale` excludes cancelled and unavailable orders.** Every revenue
   metric below bakes it in via a `FILTER` clause rather than relying on a chart
@@ -160,8 +160,8 @@ Show mean and median LTV side by side. The mean sits well above the median here
 customer is worth.
 
 The `Repeat Customer %` denominator is customers with at least one *valid* order.
-`bi_customer` keeps people whose only order was cancelled — dropping them would
-orphan fact rows — but they never bought anything.
+`bi_customer` keeps people whose only order was cancelled (dropping them would
+orphan fact rows), but they never bought anything.
 
 ### On `vw_cohort`
 
@@ -199,7 +199,7 @@ On the revenue trend, open **Advanced Analytics**:
 - **Time comparison** → Time shift `1 year ago`, Calculation `Percentage change` → YoY
 
 That is the whole of the DAX time-intelligence section, replaced by two form
-fields. Do add a second copy of the chart rather than stacking both on one — a
+fields. Do add a second copy of the chart rather than stacking both on one; a
 rolling mean and a YoY percentage on the same axis is unreadable.
 
 Superset's **Country Map** needs ISO codes and Brazil's regions are supported,
@@ -219,7 +219,7 @@ it fights you.
 | New vs returning | **Time-series Bar Chart** | `bi_orders`, X `purchase_date` Month, dimension `customer_type`, metric Total Revenue, stacked |
 | Concentration | **Line Chart** | `bi_customer`, X `customer_percentile`, metric `MAX(cumulative_revenue_pct)` |
 
-Put the two RFM bar charts side by side. The story is the gap between them — a
+Put the two RFM bar charts side by side. The story is the gap between them: a
 segment that is a sliver of the customer bar and a slab of the revenue bar is
 where the money is. Here that is **At Risk**: 15.7% of customers, 29.2% of revenue.
 
@@ -227,7 +227,7 @@ On the pivot table, turn **row and column subtotals off**. Retention totals are
 meaningless and actively misleading. Turn on conditional formatting for the
 colour scale that makes a cohort matrix readable.
 
-Sort `rfm_segment` by `segment_rank`, not alphabetically — add `segment_rank` as
+Sort `rfm_segment` by `segment_rank`, not alphabetically. Add `segment_rank` as
 a column and sort on it, or the segments come out in nonsense order.
 
 ### Tab 3 · Product & Profitability
@@ -242,7 +242,7 @@ a column and sort on it, or the segments come out in nonsense order.
 | Category detail | **Table** | `bi_sales`, `product_category` with Total Revenue, Freight % of Revenue, Total Items |
 
 The Pareto needs no clever charting because `cumulative_pct_of_revenue` is
-already computed in SQL — Superset just plots a column. If the Mixed Chart fights
+already computed in SQL; Superset just plots a column. If the Mixed Chart fights
 you over the dual axis, a Table on `vw_category_pareto` with revenue, `% of
 total` and `cumulative %` communicates the same thing and sorts properly.
 
@@ -288,7 +288,7 @@ name, because a typo gives someone an empty dashboard that looks identical to a
 quiet month.
 
 Apply the rule to **all three** datasets. Securing only `bi_sales` locks down
-revenue while leaving the RFM and LTV customer lists wide open — which is exactly
+revenue while leaving the RFM and LTV customer lists wide open, which is exactly
 what regional RLS is supposed to protect.
 
 ---
@@ -306,10 +306,10 @@ also export a PDF (**⋯ → Download → Export to PDF**) and drop screenshots 
 
 | Symptom | Cause |
 |---|---|
-| Percentage metric always `0` | integer division — add `::numeric` to the `COUNT(*)` |
+| Percentage metric always `0` | integer division, add `::numeric` to the `COUNT(*)` |
 | No time-series chart types offered | dataset has no Main Datetime Column set |
-| Cohort matrix totals look absurd | pivot subtotals are on — turn them off |
+| Cohort matrix totals look absurd | pivot subtotals are on, turn them off |
 | RFM segments in alphabetical order | sort by `segment_rank`, not the label |
 | Columns missing after a SQL change | Edit dataset → **Sync columns from source** |
-| First chart of the day is slow | Neon cold start, ~1–2 s, then cached |
-| `permission denied for schema raw` | working as intended — `superset_ro` only sees `mart` |
+| First chart of the day is slow | Neon cold start, ~1-2 s, then cached |
+| `permission denied for schema raw` | working as intended: `superset_ro` only sees `mart` |

@@ -4,11 +4,11 @@ Everything here is written for the **Power BI web editor**. Nothing needs Deskto
 
 Where to put them: create every measure on **`fact_orders`**. The web modeling
 view has no "enter data" button, so you cannot make a dedicated blank measures
-table there — parking them on the order fact keeps them in one place and the
+table there. Parking them on the order fact keeps them in one place and the
 folder structure below does the organising instead. Set each measure's **Display
 folder** (Properties pane) to the heading it sits under.
 
-Model assumptions — these are the objects imported from the `mart` schema, and
+Model assumptions: these are the objects imported from the `mart` schema, and
 they arrive already named the way every measure below refers to them:
 
 `fact_sales`, `fact_orders`, `dim_customer`, `dim_date`, `dim_product`,
@@ -161,7 +161,7 @@ RETURN
 ```
 
 Total revenue over the trailing three months divided by the number of distinct
-months actually present in that window — so the first two months of the series
+months actually present in that window, so the first two months of the series
 average over 1 and 2 months instead of returning a third of the true value.
 
 ---
@@ -268,12 +268,12 @@ RETURN
 
 The denominator is customers with at least one *valid* order, not every row of
 `dim_customer`. The dimension deliberately keeps customers whose only order was
-cancelled — dropping them would orphan their fact rows — but they never bought
+cancelled (dropping them would orphan their fact rows), but they never bought
 anything, so counting them in the base would understate the repeat rate.
 
 This is the headline number of the whole project and the one that goes wrong
 most often. It is computed off `customer_unique_id`. If you ever see it come out
-at exactly 0.00%, the model has been wired to `customer_id` — which Olist
+at exactly 0.00%, the model has been wired to `customer_id`, which Olist
 re-issues on every order, making every customer look brand new forever.
 
 ```dax
@@ -354,7 +354,7 @@ DIVIDE ( SUM ( vw_cohort[cohort_revenue] ), [Cohort Customers] )
 
 ## 06 · Experience and fulfilment
 
-All of these live on `fact_orders`, never `fact_sales` — averaging a review
+All of these live on `fact_orders`, never `fact_sales`, because averaging a review
 score at item grain weights every order by how many items it contained.
 
 ```dax
@@ -416,7 +416,7 @@ RETURN
 Avg Days vs Promise = AVERAGE ( fact_orders[days_vs_promise] )
 ```
 
-Negative is good here — it means delivery beat the promised date. Format with
+Negative is good here: it means delivery beat the promised date. Format with
 one decimal and label the axis "days early / late" so the sign reads correctly.
 
 ```dax

@@ -138,17 +138,6 @@ monitored metric, and both are visible in the report.
 
 ---
 
-## Screenshots
-
-| | |
-|---|---|
-| ![Executive Overview](docs/img/01-executive.png) | ![Customer Analytics](docs/img/02-customers.png) |
-| ![Product & Profitability](docs/img/03-product.png) | ![n8n pipeline](docs/img/04-pipeline.png) |
-
-> Drop PNGs into `docs/img/` with these names.
-
----
-
 ## On the BI tool
 
 This was built against Power BI first and moved to Superset. The move cost one

@@ -8,7 +8,7 @@ refreshes planner statistics and runs thirteen data-quality assertions. Any
 row it refuses lands in `ops.load_errors` with the reason and the original
 payload. Any hard failure stops the run loudly.
 
-Draining the full 99k-order feed takes about two days of wall clock — which is
+Draining the full 99k-order feed takes about two days of wall clock, which is
 the point. A bulk load is a one-time script; a drip is a pipeline you can watch,
 break, and show running.
 
@@ -17,7 +17,7 @@ break, and show running.
 `ops.ingest_next_batch()` does the row-level work. n8n owns scheduling, retries,
 branching and alerting. That split is deliberate:
 
-- set-based work belongs in the database — twenty n8n nodes doing per-row
+- set-based work belongs in the database; twenty n8n nodes doing per-row
   inserts would be slower and untestable
 - the logic ends up in version control as SQL, reviewable in a pull request
 - the whole batch is one transaction, so a mid-batch failure leaves no half-loaded order
@@ -25,7 +25,7 @@ branching and alerting. That split is deliberate:
 
 ## Setup
 
-1. **Credential** — n8n → Credentials → New → Postgres:
+1. **Credential**: n8n → Credentials → New → Postgres:
 
    | Field | Value |
    |---|---|
@@ -40,7 +40,7 @@ branching and alerting. That split is deliberate:
 2. **Import** `n8n/olist_drip_ingest.json` (Workflows → ⋯ → Import from file).
 
 3. Open each Postgres node and re-pick the credential. The exported JSON carries
-   a placeholder credential id, not a secret — that is intentional, and it means
+   a placeholder credential id, not a secret. That is intentional, and it means
    every node needs one click after import.
 
 4. Run it once with the **Run Once (Manual)** trigger and confirm the output:
@@ -64,7 +64,7 @@ Three things worth pointing at in an interview:
 
 **The retry is safe because the job is idempotent.** `Ingest Batch` retries three
 times. That is only sound because the function reads from a stored watermark and
-every insert is `ON CONFLICT DO NOTHING` — a retried batch re-processes the same
+every insert is `ON CONFLICT DO NOTHING`, so a retried batch re-processes the same
 window and changes nothing. Retrying a non-idempotent load is how you get
 duplicate revenue.
 
@@ -75,7 +75,7 @@ the report. The reject *rate* is itself a monitored metric.
 
 **Warnings and errors are separated.** Thirteen checks run after each batch. The
 two `warn` checks (payment gaps, unknown categories) are expected to be non-zero
-— vouchers genuinely make payments differ from item totals — so they are
+(vouchers genuinely make payments differ from item totals), so they are
 recorded but do not stop the pipeline. Only `error` severity does.
 
 ## Watching it

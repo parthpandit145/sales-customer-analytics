@@ -10,7 +10,7 @@ Why Neon over the alternatives, since the choice shows up in interviews:
 | Card required | no | no | no |
 
 The deciding factor is the idle behaviour. A portfolio project gets opened
-sporadically — weeks apart, often by someone who is not you. Supabase's free
+sporadically, weeks apart, often by someone who is not you. Supabase's free
 tier pauses a project after about a week of inactivity and needs a manual
 restore from the dashboard, so the dashboard a recruiter clicks would be dead.
 Neon suspends compute but resumes automatically on the next connection.
@@ -21,11 +21,11 @@ the geolocation table at load time (see `scripts/02_load_seed.sh`).
 ## Steps
 
 1. Sign up at **neon.tech** (GitHub or Google login, no card).
-2. **Create project** — name it `olist-analytics`. Pick the region closest to
+2. **Create project** and name it `olist-analytics`. Pick the region closest to
    you; the Fabric capacity's region matters more for refresh speed than yours,
    so if you know your Fabric home region, match it.
 3. **Dashboard → Connect** gives you the connection string. Copy **both**
-   variants — Neon shows a direct endpoint and a pooled one (the host with
+   variants. Neon shows a direct endpoint and a pooled one (the host with
    `-pooler` in it):
 
    ```
@@ -38,7 +38,7 @@ the geolocation table at load time (see `scripts/02_load_seed.sh`).
    Power BI, which open and close many short connections.
 
 4. Save both into `scripts/.env` (copy `scripts/.env.example`). That file is
-   gitignored — the connection string contains your password, so it must never
+   gitignored. The connection string contains your password, so it must never
    reach the repo.
 
 5. Install `psql` locally if you do not have it:
@@ -56,7 +56,7 @@ scripts/02_load_seed.sh       # bulk-load the CSVs into the seed schema
 ```
 
 At this point `seed.*` holds the full source and `raw.*` is empty. That is
-correct — filling `raw` is the pipeline's job, not the loader's.
+correct: filling `raw` is the pipeline's job, not the loader's.
 
 ## Things that will bite you
 
@@ -90,7 +90,7 @@ WHERE c.relkind IN ('r','m') GROUP BY 1 ORDER BY 2 DESC;
 Two things to know before you add anything:
 
 The headroom is real but not unlimited, and **`REFRESH MATERIALIZED VIEW` needs
-transient space equal to the object being refreshed** — it builds the new copy
+transient space equal to the object being refreshed**, because it builds the new copy
 before dropping the old one. An earlier version of this project materialised the
 mart layer, which pushed the database to 435 MB and then failed mid-refresh with
 `could not extend file because project size limit (512 MB) has been exceeded`.
@@ -99,7 +99,7 @@ That is why there is no materialised layer now; the reasoning is in the header o
 
 The obvious-looking saving is not one. The Portuguese review comment bodies look
 like the biggest column in the database, but Postgres TOASTs and compresses them
-down to **2.8 MB** total — dropping them buys you almost nothing. The genuinely
+down to **2.8 MB** total, so dropping them buys you almost nothing. The genuinely
 large objects are `seed.orders` (35 MB) and `raw.orders` (33 MB), which are large
 because of their indexes, not their text.
 

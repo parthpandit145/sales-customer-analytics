@@ -8,7 +8,7 @@ psql "$DATABASE_URL" -f sql/10_insight_queries.sql
 ```
 
 > The numbers are verified. The **So what** lines are deliberately left for you
-> to write — they are the part an interviewer is actually listening for, and
+> to write. They are the part an interviewer is actually listening for, and
 > they need to be in your own words. Delete this note when you have.
 
 ---
@@ -35,14 +35,14 @@ The real Pareto here is closer to 50/80 than 20/80. Worth saying plainly rather
 than forcing the dataset into the cliché: because almost everyone buys exactly
 once, revenue concentration is driven by *basket size*, not purchase frequency.
 
-**So what:** _(your call — what does a 20% → 53.6% curve mean for where marketing
+**So what:** _(your call: what does a 20% → 53.6% curve mean for where marketing
 spend should go?)_
 
 ---
 
 ## 2. Retention is the constraint, and it is severe
 
-Only **3.04%** of customers ever place a second order — 2,888 of 94,990. Average
+Only **3.04%** of customers ever place a second order, 2,888 of 94,990. Average
 orders per customer is **1.034**. Mean LTV is **R$165.65**; median is **R$107.90**.
 
 Cohort retention:
@@ -54,13 +54,13 @@ Cohort retention:
 | M6 | 15 | 56,627 | 130 | 0.23% |
 | M12 | 8 | 21,933 | 39 | 0.18% |
 
-Repeat customers generate **R$890K — 5.66% of revenue**.
+Repeat customers generate **R$890K, or 5.66% of revenue**.
 
 **Say this out loud in an interview before anyone asks:** a sub-1% M1 retention
 is not a broken funnel, it is what a marketplace looks like. Olist customers buy
 a specific item from a specific seller and leave. The analytical consequence is
 that acquisition cost has to be recovered on the *first* order, which changes
-which levers matter — nobody should be building a loyalty programme on this data.
+which levers matter. Nobody should be building a loyalty programme on this data.
 
 **So what:** _(if repeat rate went 3.04% → 5%, what is that worth at R$160 AOV?
 Compute it.)_
@@ -77,14 +77,14 @@ Compute it.)_
 | 4 | Sports Leisure | R$1.15M | 7.29% | 32.6% |
 | 5 | Computers Accessories | R$1.05M | 6.68% | 39.2% |
 
-**17 of 74 categories (23%)** reach 80% of revenue — a textbook Pareto on the
+**17 of 74 categories (23%)** reach 80% of revenue, a textbook Pareto on the
 product side, in contrast to the flatter curve on the customer side.
 
 ---
 
 ## 4. Freight erodes margin unevenly, and it tracks bulk
 
-Freight is **16.61%** of product revenue overall — **R$2.24M**. By category it
+Freight is **16.61%** of product revenue overall, or **R$2.24M**. By category it
 ranges from 8% to 25%:
 
 | Category | Revenue | Freight as % of revenue |
@@ -117,10 +117,10 @@ It gets worse monotonically with elapsed time:
 
 | Delivery speed | Orders | Avg review | AOV |
 |---|---|---|---|
-| 0–3 days | 6,926 | 4.46 | R$124.41 |
-| 4–7 days | 23,624 | 4.40 | R$143.74 |
-| 8–14 days | 37,775 | 4.30 | R$161.54 |
-| 15–30 days | 23,319 | 3.94 | R$175.93 |
+| 0-3 days | 6,926 | 4.46 | R$124.41 |
+| 4-7 days | 23,624 | 4.40 | R$143.74 |
+| 8-14 days | 37,775 | 4.30 | R$161.54 |
+| 15-30 days | 23,319 | 3.94 | R$175.93 |
 | 30+ days | 4,188 | **2.21** | R$198.02 |
 
 Note the second pattern, which is the more interesting finding: **AOV rises as
@@ -144,8 +144,8 @@ where fulfilment investment should go?)_
 | Ceará | 1.74% | **21.2 days** | 3.88 |
 
 São Paulo alone is over a third of revenue and gets its orders in less than half
-the time Ceará does. AOV runs the other way — Ceará averages **R$207.50** against
-São Paulo's **R$142.93** — so the least-served states are the highest-value
+the time Ceará does. AOV runs the other way. Ceará averages **R$207.50** against
+São Paulo's **R$142.93**, so the least-served states are the highest-value
 baskets.
 
 ---
@@ -159,7 +159,7 @@ baskets.
 | Voucher | 3,037 | 3.1% | R$114.93 | 1.00 |
 | Debit card | 1,514 | 1.5% | R$140.30 | 1.00 |
 
-One in five orders is paid by **boleto** — a printed bank slip paid in cash at a
+One in five orders is paid by **boleto**: a printed bank slip paid in cash at a
 bank or lottery agent, with no card involved. It carries a 13% lower AOV and
 cannot be instalment-financed. Any analysis that treats Brazilian e-commerce as
 card-first misses a fifth of the market.
@@ -180,7 +180,7 @@ card-first misses a fifth of the market.
 | Champions | 1,009 | 1.1% | R$375K | 2.4% | R$371 |
 | Cannot Lose Them | 47 | 0.0% | R$26K | 0.2% | R$561 |
 
-**At Risk holds 29.2% of revenue** — nearly R$4.6M, at an average recency of 399
+**At Risk holds 29.2% of revenue**, nearly R$4.6M, at an average recency of 399
 days. That is the single most actionable line in the table.
 
 Read the caveat honestly: because 97% of customers order once, the frequency
@@ -208,13 +208,13 @@ Anyone can produce charts. This section is what says you understood the business
 The questions an interviewer will ask anyway.
 
 - **Customer identity.** Olist issues a new `customer_id` for every order. All
-  customer-level analysis keys on `customer_unique_id` — 99,441 order-scoped ids
+  customer-level analysis keys on `customer_unique_id`, so 99,441 order-scoped ids
   collapse to 96,096 people. Without this the repeat rate reads as exactly 0%,
   and a data-quality check (`customer_grain_collapsed`) asserts on it every batch.
 - **"Today".** Recency is measured against the last purchase date in the data
   (`mart.v_analysis_date`), not the wall clock. Against real time every customer
   would be years dormant and RFM would collapse into one bucket.
-- **RFM frequency scoring.** Explicit bands, not `NTILE(5)` — with 97% of
+- **RFM frequency scoring.** Explicit bands, not `NTILE(5)`. With 97% of
   customers at exactly one order, quintiles would split identical customers
   across buckets on tie-break order alone.
 - **Cancelled orders.** `canceled` and `unavailable` are excluded via
@@ -223,7 +223,7 @@ The questions an interviewer will ask anyway.
 - **Payment allocation.** Payments are recorded per order; the item-grain fact
   allocates them proportionally to item value. Vouchers mean payment totals do
   not always tie to item totals, so `payment_gap` is exposed rather than hidden
-  and a check monitors it — it currently runs at 3.22% of orders.
+  and a check monitors it. It currently runs at 3.22% of orders.
 - **Completeness.** 100% of source orders reached the warehouse, 0 rejected, and
   `orders_skipped_silently` asserts that nothing the watermark passed is missing
   from both `raw.orders` and `ops.load_errors`.
