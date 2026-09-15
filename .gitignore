@@ -1,0 +1,18 @@
+# Secrets -- the connection string contains a password
+scripts/.env
+.env
+*.pgpass
+
+# Dataset (~120 MB of CSVs, fetched by scripts/00_download_data.sh)
+data/
+*.csv
+*.zip
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Superset/Preset connection URI (contains a password)
+scripts/.superset_uri
